@@ -12,7 +12,8 @@ trello/
 
 1. activate python virtual environment:
 
-- python3 -m venv .venv - source .venv/bin/activate
+- python3 -m venv .venv
+- source .venv/bin/activate
 
 2. How to install requirements:
 
@@ -35,3 +36,14 @@ or
 5. How to delete the branch we created :
 
 - git branch -D <branch name>
+
+6. push the commit to feature/authentication
+
+- git push --set-upstream origin feature/authentication
+- git push -u origin feature/authentication
+
+7. create, drop, seed flask db tables:
+
+- flask db create
+- flask db drop
+- flask db seed

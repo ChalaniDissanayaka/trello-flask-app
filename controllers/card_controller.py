@@ -5,8 +5,10 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from init import db
 from models.card import Card, card_schema, cards_schema
+from controllers.comment_controller import comments_bp
 
-cards_bp = Blueprint("cards", __name__,url_prefix="/cards")
+cards_bp = Blueprint("cards", __name__, url_prefix="/cards")
+cards_bp.register_blueprint(comments_bp)
 
 # /cards - GET - fetch all cards
 # /cards/<id> - GET - fetch a single card
@@ -23,16 +25,17 @@ def get_all_cards():
     return cards_schema.dump(cards)
 
 # /cards/<id> - GET - fetch a single card
-@cards_bp.route("/<int:id>")
+@cards_bp.route("/<int:card_id>")
 def get_one_card(card_id):
-    # stmt = db.select(Card).where(Card.id==card_id)
     stmt = db.select(Card).filter_by(id=card_id)
+    # stmt = db.select(Card).where(Card.id==card_id)
     card = db.session.scalar(stmt)
     if card:
-        return card_schema.dump(card) 
+        return card_schema.dump(card)
     else:
         return {"error": f"Card with id {card_id} not found"}, 404
     
+
 # /cards - POST - create a new card
 @cards_bp.route("/", methods=["POST"])
 @jwt_required()
@@ -47,7 +50,6 @@ def create_card():
         status=body_data.get("status"),
         priority=body_data.get("priority"),
         user_id=get_jwt_identity()
-
     )
     # add and commit to DB
     db.session.add(card)
@@ -84,7 +86,7 @@ def update_card(card_id):
     # get the card from the database
     stmt = db.select(Card).filter_by(id=card_id)
     card = db.session.scalar(stmt)
-    # if card exit
+    # if card exists
     if card:
         # update the fields as required
         card.title = body_data.get("title") or card.title

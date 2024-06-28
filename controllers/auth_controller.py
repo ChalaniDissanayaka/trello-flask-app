@@ -15,6 +15,7 @@ def register_user():
     try:
         # get the data from the body of the request
         body_data = request.get_json()
+        
         # create an instance of the User model
         user = User(
             name=body_data.get("name"),
